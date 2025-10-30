@@ -75,10 +75,14 @@ export default function BlogList({ blogs }: BlogListProps) {
 
 export async function getStaticProps() {
   const client = initializeApollo();
+
   try {
-    const { data } = await client.query({ query: GET_BLOGS });
+    const { data } = await client.query<{ blogs: Blog[] }>({
+      query: GET_BLOGS,
+    });
+
     return {
-      props: { blogs: data.blogs as Blog[] },
+      props: { blogs: data?.blogs },
       revalidate: REFRESH_TIME,
     };
   } catch (error) {
