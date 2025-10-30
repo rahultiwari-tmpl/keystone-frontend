@@ -76,14 +76,14 @@ export default function BlogDetail({ blog }: BlogDetailProps) {
 export const getStaticPaths: GetStaticPaths<Params> = async () => {
   const client = initializeApollo();
 
-  // ✅ Explicitly define the shape of data returned by this query
-  const { data } = await client.query<{ blogs: Blog[] }>({
+  const { data } = await client.query<{ blogs?: Blog[] }>({
     query: GET_BLOGS,
   });
 
-  const paths = data.blogs.map((blog) => ({
-    params: { slug: blog.slug },
-  }));
+  const paths =
+    data?.blogs?.map((blog) => ({
+      params: { slug: blog.slug },
+    })) ?? [];
 
   return { paths, fallback: "blocking" };
 };
