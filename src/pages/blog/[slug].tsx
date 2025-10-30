@@ -75,9 +75,13 @@ export default function BlogDetail({ blog }: BlogDetailProps) {
 
 export const getStaticPaths: GetStaticPaths<Params> = async () => {
   const client = initializeApollo();
-  const { data } = await client.query({ query: GET_BLOGS });
 
-  const paths = data.blogs.map((blog: Blog) => ({
+  // ✅ Explicitly define the shape of data returned by this query
+  const { data } = await client.query<{ blogs: Blog[] }>({
+    query: GET_BLOGS,
+  });
+
+  const paths = data.blogs.map((blog) => ({
     params: { slug: blog.slug },
   }));
 
@@ -88,7 +92,9 @@ export const getStaticProps: GetStaticProps<BlogDetailProps, Params> = async ({
   params,
 }) => {
   const client = initializeApollo();
-  const { data } = await client.query({
+
+  // ✅ Explicitly type the expected data
+  const { data } = await client.query<{ blog: Blog | null }>({
     query: GET_BLOG_BY_SLUG,
     variables: { slug: params?.slug },
   });
@@ -96,7 +102,7 @@ export const getStaticProps: GetStaticProps<BlogDetailProps, Params> = async ({
   if (!data.blog) return { notFound: true };
 
   return {
-    props: { blog: data.blog as Blog },
+    props: { blog: data.blog },
     revalidate: 10,
   };
 };
