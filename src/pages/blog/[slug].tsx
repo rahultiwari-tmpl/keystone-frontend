@@ -93,13 +93,14 @@ export const getStaticProps: GetStaticProps<BlogDetailProps, Params> = async ({
 }) => {
   const client = initializeApollo();
 
-  // ✅ Explicitly type the expected data
-  const { data } = await client.query<{ blog: Blog | null }>({
+  const { data } = await client.query<{ blog?: Blog }>({
     query: GET_BLOG_BY_SLUG,
     variables: { slug: params?.slug },
   });
 
-  if (!data.blog) return { notFound: true };
+  if (!data || !data.blog) {
+    return { notFound: true };
+  }
 
   return {
     props: { blog: data.blog },
