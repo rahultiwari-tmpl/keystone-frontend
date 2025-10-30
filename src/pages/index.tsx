@@ -102,7 +102,7 @@ export async function getStaticProps() {
   try {
     const { data } = await client.query({ query: GET_USERS });
 
-    if (!data || !data.users) {
+    if (!data || !data?.users) {
       return { notFound: true };
     }
     return {
